@@ -95,3 +95,8 @@ out/
 .vscode
 plan.md
 build
+
+# Quick local tests
+join.js
+play.js
+play2.js

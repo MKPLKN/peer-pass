@@ -1,0 +1,29 @@
+module.exports = class DHT {
+  constructor () {
+    this.attributes = null
+    this.socket = null
+  }
+
+  make (attributes) {
+    this.attributes = attributes
+    return this
+  }
+
+  disconnected () {
+    this.setAttribute('connected', false)
+  }
+
+  connected () {
+    this.setAttribute('connected', true)
+  }
+
+  setAttribute (key, value) {
+    this.attributes[key] = value
+  }
+
+  getAttributes (key) {
+    const attributes = this.attributes
+
+    return key ? attributes[key] : attributes
+  }
+}
