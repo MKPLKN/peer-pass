@@ -22,19 +22,24 @@ module.exports = class DatabaseController {
       if (!payload) payload = event
       const { swarmKey } = payload
 
-      const db = this.databaseService.getActiveDatabase({ model: true })
-      if (db.isReplicated() || db.replicationInProgress()) {
+      const dbModel = this.databaseService.getActiveDatabase({ model: true })
+
+      if (!dbModel.replicationSupported()) {
+        throw new Error('Current database does not support replication')
+      }
+
+      if (dbModel.isReplicated() || dbModel.replicationInProgress()) {
         throw new Error('Current database is already replicated, or is waiting to be replicated')
       }
 
-      db.markAsReplicationInProgress()
+      dbModel.markAsReplicationInProgress()
 
-      if (!db.swarm) {
+      if (!dbModel.swarm) {
         const swarm = await this.swarmService.setup({ swarmKey })
-        db.setSwarm(swarm)
+        dbModel.setSwarm(swarm)
       }
 
-      this.databaseService.replicate(db)
+      this.databaseService.replicate(dbModel)
 
       return { success: true }
     } catch (error) {

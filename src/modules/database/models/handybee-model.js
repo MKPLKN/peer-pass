@@ -1,12 +1,16 @@
 const b4a = require('b4a')
+const Database = require('./database-model')
 
-module.exports = class Database {
+module.exports = class HandyBee extends Database {
   constructor ({ db, listenerManager }) {
+    super({ db, listenerManager })
+
+    // HandyBee from p2p-resources
     this.db = db
-    this.listenerManager = listenerManager
 
     // Swarm model
     this.swarm = null
+    // SwarmManager?
 
     // Noise stream
     this.socket = null
@@ -28,6 +32,10 @@ module.exports = class Database {
 
   get key () {
     return this.db.key.toString('hex')
+  }
+
+  replicationSupported () {
+    return true
   }
 
   isReplicated () {
