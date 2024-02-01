@@ -1,4 +1,4 @@
-module.exports = class ListenerService {
+module.exports = class ListenerManager {
   constructor () {
     this.listeners = new Map()
   }

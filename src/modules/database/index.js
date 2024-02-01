@@ -1,7 +1,8 @@
 const awilix = require('awilix')
 const DatabaseService = require('./database-service')
-const DatabaseFactory = require('./database-factory')
 const DatabaseController = require('./database-controller')
+const HandyBeeAdapter = require('./adapters/handybee-adapter')
+const HandyBeeFactory = require('./factories/handybee-factory')
 
 class DatabaseModule {}
 
@@ -10,7 +11,9 @@ function registerModule (container) {
     databaseModule: awilix.asClass(DatabaseModule).singleton(),
     databaseController: awilix.asClass(DatabaseController).singleton(),
     databaseService: awilix.asClass(DatabaseService).singleton(),
-    databaseFactory: awilix.asClass(DatabaseFactory).singleton()
+    // HandyBee
+    databaseFactory: awilix.asClass(HandyBeeFactory).singleton(),
+    databaseAdapter: awilix.asClass(HandyBeeAdapter).singleton()
   })
 }
 

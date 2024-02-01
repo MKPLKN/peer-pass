@@ -1,39 +1,44 @@
 module.exports = class DatabaseService {
-  constructor ({ storage, eventService, databaseFactory }) {
-    this.storage = storage
+  constructor ({ eventService, databaseFactory, databaseAdapter }) {
     this.eventService = eventService
-    this.databaseFactory = databaseFactory
+    this.factory = databaseFactory
+    this.adapter = databaseAdapter
   }
 
-  async make (attribtues) {
-    return await this.databaseFactory.create(attribtues)
+  async create (attribtues) {
+    return await this.factory.create(attribtues)
   }
 
   getActiveDatabase (opts = {}) {
-    const { model } = opts
-    const user = this.storage.get('user')
-    return model ? user.database : user.db
+    return this.adapter.getActiveDatabase(opts)
   }
 
   getActiveMasterDatabase () {
-    const user = this.storage.get('user')
-    return user.masterDb
+    return this.adapter.getActiveMasterDatabase()
+  }
+
+  async query (query) {
+    return this.adapter.query(query)
+  }
+
+  async store (obj) {
+    return this.adapter.store(obj)
+  }
+
+  async put (key, value) {
+    await this.adapter.put(key, value)
+  }
+
+  async get (key) {
+    return await this.adapter.get(key)
   }
 
   async getResources ({ resource }) {
-    return (await this.getActiveMasterDatabase().getResources({ resource }))
-  }
-
-  async putJson (key, value) {
-    await this.getActiveDatabase().putJson(key, value)
-  }
-
-  async getJsonValue (key) {
-    return await this.getActiveDatabase().getJsonValue(key)
+    return this.adapter.getResources({ resource })
   }
 
   async findResourceByResourceKey (key) {
-    return await this.getActiveMasterDatabase().findResourceByResourceKey(key)
+    return await this.adapter.findResourceByResourceKey(key)
   }
 
   getReplicationEvents (databaseModel) {
@@ -51,16 +56,16 @@ module.exports = class DatabaseService {
     Object.keys(events).forEach(eventName => {
       const listener = events[eventName]
       this.eventService.on(eventName, listener)
-      databaseModel.listenerService.add(eventName, listener)
+      databaseModel.listenerManager.add(eventName, listener)
     })
   }
 
   removeReplicationListeners (databaseModel) {
     const events = this.getReplicationEvents(databaseModel)
     Object.keys(events).forEach(eventName => {
-      const listener = databaseModel.listenerService.get(eventName)
+      const listener = databaseModel.listenerManager.get(eventName)
       this.eventService.off(eventName, listener)
-      databaseModel.listenerService.delete(eventName)
+      databaseModel.listenerManager.delete(eventName)
     })
   }
 

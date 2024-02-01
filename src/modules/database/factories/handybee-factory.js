@@ -1,8 +1,10 @@
 const { initMasterComponents, createCore, makeDatabase } = require('p2p-resources')
-const Database = require('./database-model')
+const DatabaseFactory = require('./database-factory')
+const Database = require('../database-model')
 
-module.exports = class DatabaseFactory {
+module.exports = class HandyBeeFactory extends DatabaseFactory {
   constructor ({ listenerFactory }) {
+    super({ listenerFactory })
     this.listenerFactory = listenerFactory
   }
 
@@ -18,7 +20,7 @@ module.exports = class DatabaseFactory {
     // We also need access to the master db
     // p2p-resources ^0.0.12 store DHT nodes/swarms into the master db
     return {
-      db: new Database({ db: peerPassDb, listenerService: this.listenerFactory.create() }),
+      db: new Database({ db: peerPassDb, listenerManager: this.listenerFactory.create() }),
       masterDb: db
     }
   }

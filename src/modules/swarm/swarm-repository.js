@@ -32,10 +32,10 @@ module.exports = class SwarmRepository {
   }
 
   async setDefaultSwarmKey (key) {
-    await this.databaseService.putJson(this.defaultKey, key)
+    await this.databaseService.put(this.defaultKey, key)
   }
 
   async getDefaultSwarmKey () {
-    return await this.databaseService.getJsonValue(this.defaultKey)
+    return await this.databaseService.get(this.defaultKey)
   }
 }

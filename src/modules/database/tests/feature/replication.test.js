@@ -69,9 +69,9 @@ test('user can replicate its database', async (t) => {
   // Correct replication status
   t.alike(db.replication_status, 'in-progress', 'DBs replication status is set to "in-progress"')
   // All listeners are set up
-  t.ok(db.listenerService.get(`swarm:${db.swarm.key}:connection`), 'Database has set listener for swarm connection event')
-  t.ok(db.listenerService.get(`swarm:${db.swarm.key}:close`), 'Database has set listener for swarm close event')
-  t.ok(db.listenerService.get(`swarm:${db.swarm.key}:error`), 'Database has set listener for swarm error event')
+  t.ok(db.listenerManager.get(`swarm:${db.swarm.key}:connection`), 'Database has set listener for swarm connection event')
+  t.ok(db.listenerManager.get(`swarm:${db.swarm.key}:close`), 'Database has set listener for swarm close event')
+  t.ok(db.listenerManager.get(`swarm:${db.swarm.key}:error`), 'Database has set listener for swarm error event')
   t.alike(1, _replicateCalled, '_replicate event listener set only once')
   t.alike(1, _replicateOnCloseCalled, '_replicateOnClose event listener set only once')
   t.alike(1, _replicateOnErrorCalled, '_replicateOnError event listener set only once')

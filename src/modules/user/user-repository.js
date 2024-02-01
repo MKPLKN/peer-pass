@@ -5,7 +5,7 @@ module.exports = class UserRepository {
   }
 
   async initializeUserDatabases ({ keyPair }) {
-    const { db, masterDb } = await this.databaseService.make({ keyPair })
+    const { db, masterDb } = await this.databaseService.create({ keyPair })
     return { db, masterDb }
   }
 

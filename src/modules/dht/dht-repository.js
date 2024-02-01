@@ -16,7 +16,7 @@ module.exports = class DHTRepository {
   }
 
   async getDefaultNode () {
-    const defaultNodeKey = await this.databaseService.getJsonValue(this.defaultKey)
+    const defaultNodeKey = await this.databaseService.get(this.defaultKey)
     if (!defaultNodeKey) return null
     return await this.databaseService.findResourceByResourceKey(defaultNodeKey)
   }
@@ -37,10 +37,10 @@ module.exports = class DHTRepository {
   }
 
   async setDefaultDhtKey (key) {
-    await this.databaseService.putJson(this.defaultKey, key)
+    await this.databaseService.put(this.defaultKey, key)
   }
 
   async getDefaultDhtKey () {
-    return await this.databaseService.getJsonValue(this.defaultKey)
+    return await this.databaseService.get(this.defaultKey)
   }
 }

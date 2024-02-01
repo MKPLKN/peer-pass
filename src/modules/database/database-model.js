@@ -1,9 +1,9 @@
 const b4a = require('b4a')
 
 module.exports = class Database {
-  constructor ({ db, listenerService }) {
+  constructor ({ db, listenerManager }) {
     this.db = db
-    this.listenerService = listenerService
+    this.listenerManager = listenerManager
 
     // Swarm model
     this.swarm = null

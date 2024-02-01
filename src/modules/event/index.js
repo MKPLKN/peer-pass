@@ -1,10 +1,10 @@
 const awilix = require('awilix')
 const EventService = require('./event-service')
-const ListenerService = require('./listener-service')
+const ListenerManager = require('./listener-manager')
 
 class listenerFactory {
   create () {
-    return new ListenerService()
+    return new ListenerManager()
   }
 }
 
