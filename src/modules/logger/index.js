@@ -5,7 +5,8 @@ const awilix = require('awilix')
  */
 
 class ILogger {
-  error (msg, trace) { throw new Error('Not implemented') }
+  info (msg, trace) { throw new Error('Info not implemented') }
+  error (msg, trace) { throw new Error('Info not implemented') }
 }
 
 class ConsoleLogger extends ILogger {
