@@ -3,11 +3,6 @@ const DatabaseFactory = require('./database-factory')
 const HandyBee = require('../models/handybee-model')
 
 module.exports = class HandyBeeFactory extends DatabaseFactory {
-  constructor ({ listenerFactory }) {
-    super({ listenerFactory })
-    this.listenerFactory = listenerFactory
-  }
-
   async create (attributes) {
     const { keyPair } = attributes
     const { masterDb: db } = await initMasterComponents({ keyPair })
@@ -20,7 +15,9 @@ module.exports = class HandyBeeFactory extends DatabaseFactory {
     // We also need access to the master db
     // p2p-resources ^0.0.12 store DHT nodes/swarms into the master db
     return {
-      db: new HandyBee({ db: peerPassDb, listenerManager: this.listenerFactory.create() }),
+      db: new HandyBee({
+        db: peerPassDb
+      }),
       masterDb: db
     }
   }

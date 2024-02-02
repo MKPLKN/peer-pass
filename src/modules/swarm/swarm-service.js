@@ -71,14 +71,14 @@ module.exports = class SwarmService {
   }
 
   _socketOnError ({ error, socket, swarm }) {
-    console.log('Socket on error', error)
+    console.log('** Socket on error', error)
     const key = swarm.getAttributes('key')
     const remotePubkey = socket.remotePublicKey.toString('hex')
     this.eventService.emit(`swarm:${key}:error:${remotePubkey}`, { error, socket, swarm })
   }
 
   _socketOnClose ({ socket, swarm }) {
-    console.log('Swarm connection closed!')
+    console.log('** Swarm connection closed!')
     const key = swarm.getAttributes('key')
     const remotePubkey = socket.remotePublicKey.toString('hex')
     this.eventService.emit(`swarm:${key}:close:${remotePubkey}`, { socket, swarm })

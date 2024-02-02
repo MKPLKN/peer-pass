@@ -1,18 +1,5 @@
 module.exports = class Database {
-  constructor ({ db, listenerManager }) {
+  constructor ({ db }) {
     this.db = db
-    this.listenerManager = listenerManager
-  }
-
-  replicationSupported () {
-    return false
-  }
-
-  isReplicated () {
-    return false
-  }
-
-  replicationInProgress () {
-    return false
   }
 }

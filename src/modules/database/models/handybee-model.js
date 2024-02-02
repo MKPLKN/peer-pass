@@ -2,24 +2,8 @@ const b4a = require('b4a')
 const Database = require('./database-model')
 
 module.exports = class HandyBee extends Database {
-  constructor ({ db, listenerManager }) {
-    super({ db, listenerManager })
-
-    // HandyBee from p2p-resources
-    this.db = db
-
-    // Swarm model
-    this.swarm = null
-    // SwarmManager?
-
-    // Noise stream
-    this.socket = null
-
-    // Replication stuff
-    this.replicated = false
-    this.replication_status = null
-    this.replication_started_at = null
-    this.replication_stopped_at = null
+  constructor ({ db }) {
+    super({ db })
   }
 
   get topic () {
@@ -32,48 +16,5 @@ module.exports = class HandyBee extends Database {
 
   get key () {
     return this.db.key.toString('hex')
-  }
-
-  replicationSupported () {
-    return true
-  }
-
-  isReplicated () {
-    return this.swarm && this.replication_status === 'replicated'
-  }
-
-  replicationInProgress () {
-    return this.swarm && this.replication_status === 'in-progress'
-  }
-
-  setSwarm (swarm) {
-    this.swarm = swarm
-  }
-
-  setSocket (socket) {
-    this.socket = socket
-  }
-
-  markAsReplicationInProgress () {
-    this.socket = null
-    this.replicated = false
-    this.replication_status = 'in-progress'
-    this.replication_started_at = null
-    this.replication_stopped_at = null
-  }
-
-  markAsReplicated () {
-    this.replicated = true
-    this.replication_status = 'replicated'
-    this.replication_started_at = new Date().getTime()
-    this.replication_stopped_at = null
-  }
-
-  markAsReplicationStopped () {
-    this.socket = null
-    this.replicated = false
-    this.replication_status = 'stopped'
-    this.replication_started_at = null
-    this.replication_stopped_at = new Date().getTime()
   }
 }

@@ -7,8 +7,10 @@ const { FakeSwarmFactory, FakeSwarm, FakeDiscovery, FakeSocket } = require('../.
 const username = 'test-user'
 const password = 'password'
 
-test('user can replicate its database', async (t) => {
-  t.plan(17)
+test('user can replicate its database via Swarm', async (t) => {
+  await removeUsers()
+
+  t.plan(20)
 
   class MyFakeSwarmFactory extends FakeSwarmFactory {
     initializeSwarm (opts) {
@@ -35,58 +37,63 @@ test('user can replicate its database', async (t) => {
 
   await beforeEach(app)
   await freshUserSetup({ app, username, password })
+  const eventService = app.container.resolve('eventService')
+  const listenerManager = app.container.resolve('listenerManager')
   const databaseService = app.container.resolve('databaseService')
   const db = databaseService.getActiveDatabase({ model: true })
 
-  let _replicateCalled = 0
-  const realReplicateFn = databaseService._replicate.bind(databaseService)
-  databaseService._replicate = (databaseModel) => {
-    _replicateCalled++
-    return realReplicateFn(databaseModel)
-  }
-
-  let _replicateOnCloseCalled = 0
-  const realReplicateOnCloseFn = databaseService._replicateOnClose.bind(databaseService)
-  databaseService._replicateOnClose = (databaseModel) => {
-    _replicateOnCloseCalled++
-    return realReplicateOnCloseFn(databaseModel)
-  }
-
-  let _replicateOnErrorCalled = 0
-  const realReplicateOnErrorFn = databaseService._replicateOnError.bind(databaseService)
-  databaseService._replicateOnError = (databaseModel) => {
-    _replicateOnErrorCalled++
-    return realReplicateOnErrorFn(databaseModel)
-  }
-
   t.absent(db.swarm, 'User database has not swarm instance before replication')
-  t.alike(db.replication_status, null, 'DBs replication status is null before replication')
+  t.absent(db.replication_status, 'DBs replication status is absent before replication')
   const response = await app.container.resolve('databaseController').replicate()
   t.ok(response.success, 'DB replication response is success')
 
-  // User has swarm set up
-  t.ok(db.swarm, 'User database has swarm instance after replication')
-  // Correct replication status
-  t.alike(db.replication_status, 'in-progress', 'DBs replication status is set to "in-progress"')
-  // All listeners are set up
-  t.ok(db.listenerManager.get(`swarm:${db.swarm.key}:connection`), 'Database has set listener for swarm connection event')
-  t.ok(db.listenerManager.get(`swarm:${db.swarm.key}:close`), 'Database has set listener for swarm close event')
-  t.ok(db.listenerManager.get(`swarm:${db.swarm.key}:error`), 'Database has set listener for swarm error event')
-  t.alike(1, _replicateCalled, '_replicate event listener set only once')
-  t.alike(1, _replicateOnCloseCalled, '_replicateOnClose event listener set only once')
-  t.alike(1, _replicateOnErrorCalled, '_replicateOnError event listener set only once')
-
-  // This is the Hyperbee's replicate function
-  db.db.replicate = (s) => {
-    t.alike(s.remotePublicKey.toString('hex'), socket.remotePublicKey.toString('hex'), 'Replication is called with correct socket')
-  }
-
-  // Fake swarm connection
   const socket = new FakeSocket()
-  db.swarm.hyperswarm.emit('connection', socket)
+  eventService.on('swarm:setup:completed', async () => {
+    // User has swarm set up
+    t.ok(db.swarm, 'User database has swarm instance after replication')
+    // Correct replication status
+    t.alike(db.replication_status, 'in-progress', 'DBs replication status is set to "in-progress"')
 
-  t.ok(db.socket, 'Socket is set to the Database model')
-  t.alike(db.replication_status, 'replicated', 'DBs replication status is set to "replicated"')
+    // All listeners are set up
+    const dbKey = db.key
+    t.ok(listenerManager.get(`swarm:${db.swarm.key}:connection._handleReplication:${dbKey}`), 'Replication listener is set for swarm connection event')
 
-  await removeUsers()
+    // This is the Hyperbee's replicate function
+    db.db.replicate = async (s) => {
+      t.alike(s.remotePublicKey.toString('hex'), socket.remotePublicKey.toString('hex'), 'Replication is called with correct socket')
+    }
+
+    // Fake swarm connection
+    db.swarm.hyperswarm.emit('connection', socket)
+    t.alike(db.replication_status, 'replicated', 'DBs replication status is set to "replicated"')
+
+    // After connection, it should set listeners for the socket events
+    const remotePubkey = socket.remotePublicKey.toString('hex')
+    t.ok(listenerManager.get(`swarm:${db.swarm.key}:close:${remotePubkey}._socketOnClose:${dbKey}`), 'Listener is set for socket close event')
+    t.ok(listenerManager.get(`swarm:${db.swarm.key}:error:${remotePubkey}._socketOnError:${dbKey}`), 'Listener is set for socket error event')
+
+    // Fake close event
+    socket.emit('close')
+    // Remove event listeners for the socket
+    t.absent(listenerManager.get(`swarm:${db.swarm.key}:close:${remotePubkey}._socketOnClose:${dbKey}`), 'Listener for swarm close event removed')
+    t.absent(listenerManager.get(`swarm:${db.swarm.key}:error:${remotePubkey}._socketOnError:${dbKey}`), 'Listener for swarm error event removed')
+
+    // Fake swarm connection
+    db.swarm.hyperswarm.emit('connection', socket)
+    t.ok(listenerManager.get(`swarm:${db.swarm.key}:close:${remotePubkey}._socketOnClose:${dbKey}`), 'Listener is set for socket close event')
+    t.ok(listenerManager.get(`swarm:${db.swarm.key}:error:${remotePubkey}._socketOnError:${dbKey}`), 'Listener is set for socket error event')
+
+    // Fake error event
+    socket.emit('error')
+    t.absent(listenerManager.get(`swarm:${db.swarm.key}:close:${remotePubkey}._socketOnClose:${dbKey}`), 'Listener for swarm close event removed')
+    t.absent(listenerManager.get(`swarm:${db.swarm.key}:error:${remotePubkey}._socketOnError:${dbKey}`), 'Listener for swarm error event removed')
+
+    /**
+     * @TODO:
+     * - We should update the DB replication status if there are no active connections in the swarm
+     * - We should have dedicated tests for socket close/error events and their behaviors
+     */
+
+    await removeUsers()
+  })
 })

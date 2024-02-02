@@ -1,9 +1,11 @@
 const DatabaseAdapter = require('./database-adapter')
 
 module.exports = class HandyBeeAdapter extends DatabaseAdapter {
-  constructor ({ storage }) {
+  constructor ({ storage, eventService, replicationManager }) {
     super()
     this.storage = storage
+    this.eventService = eventService
+    this.replicationManager = replicationManager
   }
 
   getActiveDatabase (opts = {}) {
@@ -71,5 +73,29 @@ module.exports = class HandyBeeAdapter extends DatabaseAdapter {
 
   async findResourceByResourceKey (key) {
     return await this.getActiveMasterDatabase().findResourceByResourceKey(key)
+  }
+
+  replicationSupported () {
+    return this.replicationManager.replicationSupported()
+  }
+
+  isReplicated () {
+    return this.replicationManager.isReplicated({
+      databaseModel: this.getActiveDatabase({ model: true })
+    })
+  }
+
+  replicationInProgress () {
+    return this.replicationManager.replicationInProgress({
+      databaseModel: this.getActiveDatabase({ model: true })
+    })
+  }
+
+  startReplication (opts = {}) {
+    const { swarmKey } = opts
+    this.replicationManager.start({
+      swarmKey, // Pre-defined hyperswarm
+      databaseModel: this.getActiveDatabase({ model: true })
+    })
   }
 }
