@@ -5,13 +5,17 @@ const SwarmFactory = require('./swarm-factory')
 const SwarmRepository = require('./swarm-repository')
 
 class SwarmModule {
-  constructor ({ eventService, SwarmService }) {
+  constructor ({ eventService, swarmService }) {
     this.eventService = eventService
-    this.swarmService = SwarmService
+    this.swarmService = swarmService
   }
 
   registerEventListeners () {
-    //
+    this.eventService.on('swarm:setup', async ({ swarmKey, databaseModel }) => {
+      if (!databaseModel) return
+      const swarm = await this.swarmService.setup({ swarmKey })
+      this.eventService.emit('swarm:setup:completed', { databaseModel, swarm })
+    })
   }
 }
 

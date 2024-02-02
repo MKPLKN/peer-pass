@@ -32,6 +32,7 @@ function createApplication ({ ipcMain } = {}) {
   const setup = () => {
     // Events
     container.resolve('userModule').registerEventListeners()
+    container.resolve('swarmModule').registerEventListeners()
     // Routes
     container.resolve('authModule').registerRoutes()
   }
