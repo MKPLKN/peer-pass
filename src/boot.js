@@ -47,7 +47,7 @@ function createTestApplication () {
   beforeStart()
 
   // Let's mute the logger by default
-  app.container.register('logger', awilix.asValue({ error: noop }))
+  app.container.register('logger', awilix.asValue({ info: noop, error: noop }))
 
   return {
     ...app,
