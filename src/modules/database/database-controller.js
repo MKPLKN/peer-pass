@@ -16,7 +16,7 @@ module.exports = class DatabaseController {
     }
   }
 
-  async replicate (event, payload = {}) {
+  async replicate (event = {}, payload) {
     try {
       if (!payload) payload = event
       const { swarmKey } = payload
