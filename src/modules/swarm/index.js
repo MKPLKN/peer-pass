@@ -13,8 +13,13 @@ class SwarmModule {
   registerEventListeners () {
     this.eventService.on('swarm:setup', async ({ swarmKey, databaseModel }) => {
       if (!databaseModel) return
+
       const swarm = await this.swarmService.setup({ swarmKey })
-      this.eventService.emit('swarm:setup:completed', { databaseModel, swarm })
+      if (swarm) {
+        this.eventService.emit('swarm:setup:completed', { databaseModel, swarm })
+      } else {
+        this.eventService.emit('swarm:setup:failure', { databaseModel, swarm })
+      }
     })
   }
 }
