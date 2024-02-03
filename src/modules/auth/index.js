@@ -18,8 +18,7 @@ function registerModule (container) {
   container.register({
     authModule: awilix.asClass(AuthModule).singleton(),
     authController: awilix.asClass(AuthController).singleton(),
-    authService: awilix.asClass(AuthService).singleton(),
-    test: awilix.asFunction(() => console.log('test!!'))
+    authService: awilix.asClass(AuthService).singleton()
   })
 }
 

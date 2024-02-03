@@ -20,8 +20,6 @@ test('auth/login', async (t) => {
   t.ok(user)
   t.ok(user.db)
 
-  console.log({ wow: await user.db.getResources() })
-
   // @TODO: Test the application does not use the user's master DB
   // -
 
