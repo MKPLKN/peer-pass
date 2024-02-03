@@ -20,7 +20,7 @@ function createApplication ({ ipcMain } = {}) {
   container.register({ ipc: awilix.asValue(ipcMain || {}) })
   registeEventModule(container)
   registerStorageModule(container, { storage: 'in-memory' })
-  registerLoggerModule(container, { logger: 'console ' })
+  registerLoggerModule(container, { logger: 'winston' })
   registerAuthModule(container)
   registerUserModule(container)
   registerDatabaseModule(container)

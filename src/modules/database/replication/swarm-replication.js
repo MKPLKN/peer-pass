@@ -1,8 +1,9 @@
 const ReplicationManager = require('./replication-manager')
 
 module.exports = class SwarmReplication extends ReplicationManager {
-  constructor ({ eventService, listenerManager, replicationState }) {
+  constructor ({ logger, eventService, listenerManager, replicationState }) {
     super()
+    this.logger = logger
     this.eventService = eventService
     this.listenerManager = listenerManager
     this.replicationState = replicationState
@@ -54,6 +55,7 @@ module.exports = class SwarmReplication extends ReplicationManager {
     const { topic, swarm } = databaseModel
     const discovery = swarm.hyperswarm.join(topic)
     await discovery.flushed()
+    this.logger.info(`Flushed: ${topic.toString('hex')}`)
     this.eventService.emit(`swarm:${swarm.key}:joined:${topic.toString('hex')}`, { databaseModel })
   }
 
@@ -65,7 +67,7 @@ module.exports = class SwarmReplication extends ReplicationManager {
       this.listenerManager.add(`swarm:${key}:connection._addSocketListeners:${dbKey}`, this._addSocketListeners.bind(this, databaseModel))
       this.listenerManager.add(`swarm:${key}:update._checkUpdatedSwarm:${dbKey}`, this._checkUpdatedSwarm.bind(this, databaseModel))
     } catch (error) {
-      // @TODO: use logger module
+      this.logger.error(`${error.message} - DB: ${databaseModel.key} - Swarm: ${swarm ? swarm.key : 'undefined'}`)
     }
   }
 
@@ -92,23 +94,25 @@ module.exports = class SwarmReplication extends ReplicationManager {
   }
 
   _checkUpdatedSwarm (databaseModel, { swarm }) {
-    //
+    const { hyperswarm } = swarm
+    const connections = Array.from(hyperswarm.connections).map(conn => conn.remotePublicKey.toString('hex')).join(' && ')
+    this.logger.info(`Swarm ${swarm.key} updated! Connections: ${hyperswarm.connections.size} | ${connections}. Database: ${databaseModel.key}`)
   }
 
   _handleReplication (databaseModel, { socket }) {
     databaseModel.db.replicate(socket)
     this.replicationState.replicated(databaseModel)
 
-    // @TODO: use logger module instead
-    const remotePubkey = socket.remotePublicKey.toString('hex')
-    console.log(`* New connection to replicate "${databaseModel.key}" from "${remotePubkey}"`)
+    this.logger.info(`* New connection to replicate "${databaseModel.key}" from "${socket.remotePublicKey.toString('hex')}"`)
   }
 
   _socketOnClose (databaseModel, { socket, swarm }) {
+    this.logger.info(`* Socket closed: ${socket.remotePublicKey.toString('hex')}`)
     this._removeSocketListeners({ databaseModel, swarm, socket })
   }
 
   _socketOnError (databaseModel, { error, socket, swarm }) {
+    this.logger.info(`* Socket closed: ${socket.remotePublicKey.toString('hex')}`)
     this._removeSocketListeners({ databaseModel, swarm, socket })
   }
 }
