@@ -10,6 +10,8 @@ module.exports = class HandyBeeFactory extends DatabaseFactory {
     let peerPassDb = await db.findResourceByName('peer-pass')
     if (!peerPassDb) {
       peerPassDb = await this.createDatabase({ db, name: 'peer-pass' })
+    } else {
+      peerPassDb = await makeDatabase(peerPassDb.hypercore)
     }
 
     // We also need access to the master db
