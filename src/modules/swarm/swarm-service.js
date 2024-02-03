@@ -58,8 +58,14 @@ module.exports = class SwarmService {
     // Basic setup
     const { hyperswarm } = swarm
     hyperswarm.on('connection', (socket) => this._onSwarmConnection({ socket, swarm }))
+    hyperswarm.on('update', () => this._onSwarmUpdate({ swarm }))
 
     return swarm
+  }
+
+  _onSwarmUpdate ({ swarm }) {
+    const key = swarm.getAttributes('key')
+    this.eventService.emit(`swarm:${key}:update`, { swarm })
   }
 
   _onSwarmConnection ({ socket, swarm }) {

@@ -58,10 +58,15 @@ module.exports = class SwarmReplication extends ReplicationManager {
   }
 
   addSwarmListeners ({ databaseModel, swarm }) {
-    const dbKey = databaseModel.key
-    const key = swarm.getAttributes('key')
-    this.listenerManager.add(`swarm:${key}:connection._handleReplication:${dbKey}`, this._handleReplication.bind(this, databaseModel))
-    this.listenerManager.add(`swarm:${key}:connection._addSocketListeners:${dbKey}`, this._addSocketListeners.bind(this, databaseModel))
+    try {
+      const dbKey = databaseModel.key
+      const key = swarm.getAttributes('key')
+      this.listenerManager.add(`swarm:${key}:connection._handleReplication:${dbKey}`, this._handleReplication.bind(this, databaseModel))
+      this.listenerManager.add(`swarm:${key}:connection._addSocketListeners:${dbKey}`, this._addSocketListeners.bind(this, databaseModel))
+      this.listenerManager.add(`swarm:${key}:update._checkUpdatedSwarm:${dbKey}`, this._checkUpdatedSwarm.bind(this, databaseModel))
+    } catch (error) {
+      // @TODO: use logger module
+    }
   }
 
   removeSwarmListeners ({ databaseModel, swarm }) {
@@ -84,6 +89,10 @@ module.exports = class SwarmReplication extends ReplicationManager {
     const remotePubkey = socket.remotePublicKey.toString('hex')
     this.listenerManager.add(`swarm:${key}:close:${remotePubkey}._socketOnClose:${dbKey}`, this._socketOnClose.bind(this, databaseModel))
     this.listenerManager.add(`swarm:${key}:error:${remotePubkey}._socketOnError:${dbKey}`, this._socketOnError.bind(this, databaseModel))
+  }
+
+  _checkUpdatedSwarm (databaseModel, { swarm }) {
+    //
   }
 
   _handleReplication (databaseModel, { socket }) {
