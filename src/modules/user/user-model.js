@@ -4,10 +4,6 @@ module.exports = class User {
     this.keyPair = keyPair
     this.database = db
     this.masterDb = masterDb
-
-    // @TODO:
-    // - Should we inject databaseService as a dependency instead of direct access to "db" and "masterDb"?
-    // this.databaseService = databaseService
   }
 
   get name () {
