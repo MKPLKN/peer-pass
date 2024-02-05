@@ -4,6 +4,10 @@ module.exports = class DHT {
     this.socket = null
   }
 
+  get key () {
+    return this.attributes ? this.getAttributes('key') : null
+  }
+
   make (attributes) {
     this.attributes = attributes
     return this
