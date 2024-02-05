@@ -69,7 +69,7 @@ module.exports = class DHTService {
   }
 
   _dhtOnClose ({ node }) {
-    console.log('DHT connection closed!')
+    this.logger.info(`DHT connection closed: ${node.key}`)
     node.disconnected()
     this.eventService.emit('dht:closed', { node })
   }

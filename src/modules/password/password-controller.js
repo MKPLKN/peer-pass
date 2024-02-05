@@ -17,8 +17,7 @@ module.exports = class PasswordController {
 
       return { success: true, password: password.getAttributes() }
     } catch (error) {
-      console.log(error)
-      this.logger.error(error.message, { username: payload.username })
+      this.logger.error(`Password create failed: ${error.message}`, { error })
       return { success: false, error }
     }
   }

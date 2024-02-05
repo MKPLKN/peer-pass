@@ -32,7 +32,7 @@ module.exports = class UserController {
         username: user.username
       }
     } catch (error) {
-      console.log(error)
+      this.logger.error(`User get failed: ${error.message}`, { error })
       return { success: false, isAuthenticated: false }
     }
   }
@@ -45,7 +45,7 @@ module.exports = class UserController {
       this.eventService.emit('user:created')
       return { success: true, seed: mnemonic }
     } catch (error) {
-      this.logger.error(error.message, { username: payload.username })
+      this.logger.error(`User create failed: ${error.message}`, { username: payload.username })
       return { success: false, error }
     }
   }

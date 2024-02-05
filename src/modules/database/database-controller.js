@@ -1,5 +1,6 @@
 module.exports = class DatabaseController {
-  constructor ({ eventService, databaseService }) {
+  constructor ({ logger, eventService, databaseService }) {
+    this.logger = logger
     this.eventService = eventService
     this.databaseService = databaseService
   }
@@ -33,7 +34,7 @@ module.exports = class DatabaseController {
 
       return { success: true }
     } catch (error) {
-      console.log(error)
+      this.logger.error(`Replication failed: ${error.message}`, { error })
       return { success: false }
     }
   }

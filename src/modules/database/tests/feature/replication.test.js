@@ -84,7 +84,7 @@ test('user can replicate its database via Swarm', async (t) => {
     t.ok(listenerManager.get(`swarm:${db.swarm.key}:error:${remotePubkey}._socketOnError:${dbKey}`), 'Listener is set for socket error event')
 
     // Fake error event
-    socket.emit('error')
+    socket.emit('error', {})
     t.absent(listenerManager.get(`swarm:${db.swarm.key}:close:${remotePubkey}._socketOnClose:${dbKey}`), 'Listener for swarm close event removed')
     t.absent(listenerManager.get(`swarm:${db.swarm.key}:error:${remotePubkey}._socketOnError:${dbKey}`), 'Listener for swarm error event removed')
 

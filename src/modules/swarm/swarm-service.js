@@ -1,5 +1,6 @@
 module.exports = class SwarmService {
-  constructor ({ eventService, swarmFactory, swarmRepository }) {
+  constructor ({ logger, eventService, swarmFactory, swarmRepository }) {
+    this.logger = logger
     this.eventService = eventService
     this.factory = swarmFactory
     this.repository = swarmRepository
@@ -77,16 +78,16 @@ module.exports = class SwarmService {
   }
 
   _socketOnError ({ error, socket, swarm }) {
-    console.log('** Socket on error', error)
+    this.logger.error(`** Socket on error: ${error.message}`, error)
     const key = swarm.getAttributes('key')
     const remotePubkey = socket.remotePublicKey.toString('hex')
     this.eventService.emit(`swarm:${key}:error:${remotePubkey}`, { error, socket, swarm })
   }
 
   _socketOnClose ({ socket, swarm }) {
-    console.log('** Swarm connection closed!')
     const key = swarm.getAttributes('key')
     const remotePubkey = socket.remotePublicKey.toString('hex')
     this.eventService.emit(`swarm:${key}:close:${remotePubkey}`, { socket, swarm })
+    this.logger.info(`** Swarm connection closed: ${remotePubkey} on swarm: ${key}`)
   }
 }

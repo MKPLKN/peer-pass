@@ -1,5 +1,6 @@
 module.exports = class DHTController {
-  constructor ({ dhtService, eventService }) {
+  constructor ({ logger, dhtService, eventService }) {
+    this.logger = logger
     this.dhtService = dhtService
     this.eventService = eventService
   }
@@ -12,7 +13,7 @@ module.exports = class DHTController {
 
       return { success: true, items: list }
     } catch (error) {
-      console.log(error)
+      this.logger.error(`DHT index failed: ${error.message}`, { error })
       return { success: false }
     }
   }
@@ -25,7 +26,7 @@ module.exports = class DHTController {
 
       return { success: true, details }
     } catch (error) {
-      console.log(error)
+      this.logger.error(`DHT create failed: ${error.message}`, { error })
       return { success: false }
     }
   }
@@ -39,7 +40,7 @@ module.exports = class DHTController {
 
       return { success: true }
     } catch (error) {
-      console.log(error)
+      this.logger.error(`DHT connect failed: ${error.message}`, { error })
       return { success: false }
     }
   }
