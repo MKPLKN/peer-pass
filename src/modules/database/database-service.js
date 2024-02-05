@@ -25,6 +25,14 @@ module.exports = class DatabaseService {
     return this.adapter.store(obj)
   }
 
+  async update (obj) {
+    return this.adapter.update(obj)
+  }
+
+  async destroy (obj) {
+    return this.adapter.destroy(obj)
+  }
+
   async put (key, value) {
     await this.adapter.put(key, value)
   }

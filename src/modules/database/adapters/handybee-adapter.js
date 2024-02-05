@@ -32,22 +32,50 @@ module.exports = class HandyBeeAdapter extends DatabaseAdapter {
 
   _parseStore (query) {
     const { model, attributes } = query
-    const { id } = attributes
-    return { key: `${model}:id:${id}`, value: attributes }
+    const { id, updatedAt, createdAt, updatedAtHr, createdAtHr } = attributes
+    return {
+      key: `${model}:id:${id}`,
+      keys: [
+        `${model}:id:${id}`,
+        `${model}:updatedAt:${updatedAt}`,
+        `${model}:createdAt:${createdAt}`,
+        // Hight resolution
+        `${model}:updatedAtHr:${updatedAtHr}`,
+        `${model}:createdAtHr:${createdAtHr}`
+      ],
+      value: attributes
+    }
   }
 
   async query (query) {
     const key = this._parseQuery(query)
+
     return await this.get(key)
   }
 
   async store (query) {
-    const { key, value } = this._parseStore(query)
-    return await this.put(key, value)
+    const { keys, value } = this._parseStore(query)
+    for await (const key of keys) {
+      await this.put(key, value)
+    }
   }
 
   async create (query) {
     return await this.store(query)
+  }
+
+  async update (query) {
+    const { keys, value } = this._parseStore(query)
+    for await (const key of keys) {
+      await this.put(key, value)
+    }
+  }
+
+  async destroy (query) {
+    const { keys } = this._parseStore(query)
+    for await (const key of keys) {
+      await this.del(key)
+    }
   }
 
   async put (key, value) {
@@ -56,7 +84,29 @@ module.exports = class HandyBeeAdapter extends DatabaseAdapter {
     await db.put(key, JSON.stringify(value))
   }
 
+  async getWildcard (key) {
+    const db = this.getActiveDatabase()
+
+    const gte = key.slice(0, key.length - 1)
+    const stream = db.createReadStream({
+      gte: Buffer.from(gte),
+      lte: Buffer.from(gte + '{') // Use a character that comes after all expected characters in the key
+    })
+
+    const items = []
+    for await (const item of stream) {
+      items.push(JSON.parse(item.value))
+    }
+
+    return items
+  }
+
   async get (key) {
+    // is there a wild card?
+    if (key.includes('*')) {
+      return await this.getWildcard(key)
+    }
+
     const db = this.getActiveDatabase()
     const value = (await db.getValue(key))
     if (!value) return null
@@ -65,6 +115,11 @@ module.exports = class HandyBeeAdapter extends DatabaseAdapter {
     } catch (error) {
       return value.toString()
     }
+  }
+
+  async del (key) {
+    const db = this.getActiveDatabase()
+    await db.del(key)
   }
 
   async getResources ({ resource }) {
