@@ -16,7 +16,7 @@ module.exports = class DHTRepository {
   }
 
   async getDefaultNode () {
-    const defaultNodeKey = await this.databaseService.get(this.defaultKey)
+    const defaultNodeKey = await this.getDefaultDhtKey()
     if (!defaultNodeKey) return null
     return await this.databaseService.findResourceByResourceKey(defaultNodeKey)
   }
@@ -33,7 +33,13 @@ module.exports = class DHTRepository {
   }
 
   async findByResourceKey (key) {
-    return await this.databaseService.findResourceByResourceKey(key)
+    const resource = await this.databaseService.findResourceByResourceKey(key)
+
+    if (!resource || !resource.details || !resource.details.opts) {
+      throw new Error(`Resource not found by resource key: ${key}`)
+    }
+
+    return resource
   }
 
   async setDefaultDhtKey (key) {
