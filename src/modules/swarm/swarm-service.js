@@ -34,7 +34,7 @@ module.exports = class SwarmService {
 
   async disconnect (swarmModel) {
     if (swarmModel.hyperswarm) {
-      await swarmModel.hyperswarm.destroy({ force: true })
+      await swarmModel.hyperswarm.destroy()
     }
   }
 
