@@ -1,6 +1,6 @@
 const Joi = require('joi')
 
-const schema = Joi.object({
+const baseSchema = Joi.object({
   title: Joi.string().required(),
   identifier: Joi.string().allow(''),
   password: Joi.string().allow(''),
@@ -8,7 +8,29 @@ const schema = Joi.object({
   note: Joi.string().allow('')
 })
 
-function validate (attributes) {
+function validate (attributes, opts = {}) {
+  const { method } = opts
+
+  let schema = null
+  switch (method) {
+    case 'create':
+      schema = baseSchema
+      break
+    case 'update':
+      schema = baseSchema.keys({
+        id: Joi.string().required()
+      })
+      break
+    case 'destroy':
+      schema = Joi.object({
+        id: Joi.string().required()
+      })
+      break
+    default:
+      schema = baseSchema
+      break
+  }
+
   const { error, value } = schema.validate(attributes)
 
   if (error) {
