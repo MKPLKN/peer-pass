@@ -1,12 +1,21 @@
 const { createNode } = require('p2p-resources')
 
 module.exports = class DHTRepository {
-  constructor ({ databaseService }) {
+  constructor ({ storage, databaseService }) {
+    this.storage = storage
     this.databaseService = databaseService
   }
 
   get defaultKey () {
     return 'peer-pass:default-dht'
+  }
+
+  setDht (key, value) {
+    this.storage.set(key, value)
+  }
+
+  getDht (key) {
+    return this.storage.get(key)
   }
 
   async getAll () {
@@ -24,7 +33,7 @@ module.exports = class DHTRepository {
   async create (attributes) {
     const { name, bootstrap, setAsDefault } = attributes
 
-    const { details } = await createNode(this.databaseService.getActiveMasterDatabase(), { name, bootstrap: bootstrap || [] })
+    const { details } = await createNode(this.databaseService.getActiveMasterDatabase(), { name, bootstrap: bootstrap || null })
     if (details && details.resourceKey && setAsDefault) {
       await this.setDefaultDhtKey(details.resourceKey)
     }

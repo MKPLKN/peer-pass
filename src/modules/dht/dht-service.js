@@ -40,20 +40,31 @@ module.exports = class DHTService {
     return newNode.details.resourceKey
   }
 
-  async disconnect (dhtModel) {
-    if (dhtModel.socket) {
-      await dhtModel.socket.destroy({ force: true })
-    }
-  }
-
   async findByResourceKey (key) {
     return await this.repository.findByResourceKey(key)
   }
 
   async initByKey (key) {
-    const resource = await this.findByResourceKey(key)
+    const cacheKey = `dhtNodes.initialized.${key}`
+    const fromCache = this.repository.getDht(cacheKey)
+    if (fromCache) return fromCache
 
-    return this.factory.init(resource.details, resource.details.opts)
+    const resource = await this.findByResourceKey(key)
+    const dhtModel = this.factory.init(resource.details, resource.details.opts)
+
+    this.repository.setDht(cacheKey, dhtModel)
+
+    return dhtModel
+  }
+
+  async disconnect (dhtModel) {
+    if (typeof dhtModel === 'string') {
+      return this.disconnect(await this.initByKey(dhtModel))
+    }
+
+    if (dhtModel.socket) {
+      await dhtModel.socket.destroy()
+    }
   }
 
   async connect ({ localPeerAddress, remotePeerAddress }) {
@@ -64,10 +75,12 @@ module.exports = class DHTService {
 
     // Connect to the given remote peer address
     const remoteBuffer = typeof remotePeerAddress === 'string' ? b4a.from(remotePeerAddress, 'hex') : remotePeerAddress
-    node.socket = node.dht.connect(remoteBuffer)
-    node.socket.on('close', () => this._dhtOnClose({ node }))
-    node.socket.on('error', (error) => this._dhtOnError({ node, error }))
-    node.socket.on('connect', () => this._dhtOnConnection({ node }))
+    const socket = node.dht.connect(remoteBuffer)
+    socket.on('close', () => this._dhtOnClose({ node }))
+    socket.on('error', (error) => this._dhtOnError({ node, error }))
+    socket.on('connect', () => this._dhtOnConnection({ node }))
+
+    node.setSocket(socket)
 
     return node
   }

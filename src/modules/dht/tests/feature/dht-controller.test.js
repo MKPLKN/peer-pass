@@ -57,10 +57,13 @@ test('dht/index - a list of users DHT nodes', async (t) => {
 })
 
 test('dht/connect - it connects the users DHT node to the given pubkey', async (t) => {
-  t.plan(10)
+  t.plan(11)
 
   const app = createTestApplication()
   const fakeSocket = new FakeSocket()
+  fakeSocket.destroy = () => {
+    t.ok(true, 'Destroy called!')
+  }
   class DHTFactoryProxy extends DHTFactory {
     initializeDHT (opts) {
       return {
@@ -113,6 +116,9 @@ test('dht/connect - it connects the users DHT node to the given pubkey', async (
     t.alike(error.msg, 'fake-error-msg')
   })
   fakeSocket.emit('error', { msg: 'fake-error-msg' })
+
+  // Disconnect the DHT node
+  await dhtController.disconnect({ key: defaultNode.details.key })
 
   await removeUsers()
 })

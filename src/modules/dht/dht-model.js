@@ -21,6 +21,10 @@ module.exports = class DHT {
     this.setAttribute('connected', true)
   }
 
+  setSocket (socket) {
+    this.socket = socket
+  }
+
   setAttribute (key, value) {
     this.attributes[key] = value
   }

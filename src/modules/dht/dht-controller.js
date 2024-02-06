@@ -36,11 +36,25 @@ module.exports = class DHTController {
       if (!payload) payload = event
       const { remotePeerAddress } = payload
 
-      await this.dhtService.connect({ remotePeerAddress })
+      const node = await this.dhtService.connect({ remotePeerAddress })
+
+      return { success: true, node }
+    } catch (error) {
+      this.logger.error(`DHT connect failed: ${error.message}`, { error })
+      return { success: false }
+    }
+  }
+
+  async disconnect (event, payload) {
+    try {
+      if (!payload) payload = event
+      const { key } = payload
+
+      await this.dhtService.disconnect(key)
 
       return { success: true }
     } catch (error) {
-      this.logger.error(`DHT connect failed: ${error.message}`, { error })
+      this.logger.error(`DHT disconnect failed: ${error.message}`, { error })
       return { success: false }
     }
   }
