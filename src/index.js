@@ -1,9 +1,9 @@
-const { app, BrowserWindow } = require('electron')
+const { app, BrowserWindow, ipcMain } = require('electron')
 const path = require('path')
 
-// require('../../src/bootstrap/init.js')
-// require('../../src/routes/api.js')
-require('../../src/boot.js')
+const { createApplication } = require('../../src/boot.js')
+const peerPass = createApplication({ ipcMain })
+peerPass.setup()
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
