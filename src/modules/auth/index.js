@@ -9,8 +9,8 @@ class AuthModule {
   }
 
   registerRoutes () {
-    this.ipc.handle('auth/login', this.controller.login)
-    this.ipc.handle('auth/restore', this.controller.restore)
+    this.ipc.handle('auth/login', (event, payload) => this.controller.login(payload))
+    this.ipc.handle('auth/restore', (event, payload) => this.controller.restore(payload))
   }
 }
 
