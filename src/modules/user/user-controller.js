@@ -26,6 +26,9 @@ module.exports = class UserController {
   async get () {
     try {
       const user = this.userService.getUser()
+
+      if (!user) return { success: false, isAuthenticated: false }
+
       return {
         success: true,
         isAuthenticated: user.isAuthenticated,

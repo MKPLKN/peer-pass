@@ -6,9 +6,11 @@ const UserFactory = require('./user-factory')
 const UserController = require('./user-controller')
 
 class UserModule {
-  constructor ({ eventService, userService }) {
+  constructor ({ ipc, eventService, userService, userController }) {
+    this.ipc = ipc
     this.eventService = eventService
     this.userService = userService
+    this.controller = userController
   }
 
   registerEventListeners () {
@@ -16,6 +18,11 @@ class UserModule {
       userService: this.userService,
       eventService: this.eventService
     }))
+  }
+
+  registerRoutes () {
+    this.ipc.handle('user/get', () => this.controller.get())
+    this.ipc.handle('user/create', (event, payload) => this.controller.get(payload))
   }
 }
 

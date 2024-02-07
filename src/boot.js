@@ -35,6 +35,7 @@ function createApplication ({ ipcMain } = {}) {
     container.resolve('swarmModule').registerEventListeners()
     // Routes
     container.resolve('authModule').registerRoutes()
+    container.resolve('userModule').registerRoutes()
   }
 
   return { container, setup }
