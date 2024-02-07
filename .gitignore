@@ -94,6 +94,7 @@ out/
 .p2p*
 .vscode
 plan.md
+notes.md
 build
 
 # Quick local tests
