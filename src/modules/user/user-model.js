@@ -6,6 +6,10 @@ module.exports = class User {
     this.masterDb = masterDb
   }
 
+  get isAuthenticated () {
+    return !!this.pubkey
+  }
+
   get name () {
     return this.username
   }
