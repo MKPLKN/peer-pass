@@ -36,6 +36,7 @@ function createApplication ({ ipcMain } = {}) {
     // Routes
     container.resolve('authModule').registerRoutes()
     container.resolve('userModule').registerRoutes()
+    container.resolve('passwordModule').registerRoutes()
   }
 
   return { container, setup }

@@ -17,7 +17,10 @@ class PasswordModule {
   }
 
   registerRoutes () {
-    this.ipc.handle('password/create', this.controller.create)
+    this.ipc.handle('password/index', (event, payload) => this.controller.index(payload))
+    this.ipc.handle('password/create', (event, payload) => this.controller.create(payload))
+    this.ipc.handle('password/update', (event, payload) => this.controller.update(payload))
+    this.ipc.handle('password/destroy', (event, payload) => this.controller.destroy(payload))
   }
 }
 
