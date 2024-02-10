@@ -9,7 +9,7 @@ const { registerDatabaseModule } = require('./modules/database')
 const { registerDHTModule } = require('./modules/dht')
 const { registerSwarmModule } = require('./modules/swarm')
 const { beforeStart } = require('../tests/helpers')
-// const { ipcMain } = require('electron')
+const { registerWsModule } = require('./modules/ws')
 
 function createApplication ({ ipcMain } = {}) {
   const container = awilix.createContainer({
@@ -27,6 +27,7 @@ function createApplication ({ ipcMain } = {}) {
   registerPasswordModule(container)
   registerDHTModule(container)
   registerSwarmModule(container)
+  registerWsModule(container)
 
   // Setup phase
   const setup = () => {
@@ -37,6 +38,12 @@ function createApplication ({ ipcMain } = {}) {
     container.resolve('authModule').registerRoutes()
     container.resolve('userModule').registerRoutes()
     container.resolve('passwordModule').registerRoutes()
+
+    /**
+     * WebSocket Example
+     */
+    // const ws = container.resolve('wsModule')
+    // ws.start()
   }
 
   return { container, setup }
