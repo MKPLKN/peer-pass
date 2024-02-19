@@ -27,7 +27,7 @@ export const usePasswordStore = defineStore('passwords', {
       if (success) {
         this.passwords.push(password)
       } else {
-        console.log('Something went wrong!')
+        //
       }
     },
     updatePassword (id, updatedPassword) {
