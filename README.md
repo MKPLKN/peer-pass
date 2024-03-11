@@ -7,9 +7,9 @@ Built using P2P building blocks by [Holepunch](https://docs.pears.com/) - Develo
 > Frontend and backend are separated into their own repositories; this is the frontend repository. [You can find the backend from here.](https://github.com/MKPLKN/peer-pass-backend)
 
 <p align="center">
-  <img src="./src/demo/login" alt="Login page" width="30%" />
-  <img src="./src/demo/home" alt="Home page" width="30%" />
-  <img src="./src/demo/pw" alt="Generate pw" width="30%" />
+  <img src="./src/demo/login.png" alt="Login page" width="30%" />
+  <img src="./src/demo/home.png" alt="Home page" width="30%" />
+  <img src="./src/demo/pw.png" alt="Generate pw" width="30%" />
 </p>
 
 ## Development
