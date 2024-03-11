@@ -59,6 +59,7 @@
     "hypercore": "^10.33.0",
     "keypear": "^1.2.1",
     "pear": "^1.0.2",
+    "peer-pass-backend": "^1.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router": "^6.22.1",
