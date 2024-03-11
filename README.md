@@ -29,14 +29,6 @@ If you do not have pears installed, [get started here.](https://docs.pears.com/g
 ```sh
 git clone <repo_url>
 
-npm install
-
-// Compiles CSS file into ./dist/output.css – the project uses the Tailwind CSS
-npm run css
-
-// Compiles JSX into JS file(s) into ./dist
-npm run build
-
-// Start development
-pear dev
+// Install modules, and start development
+npm install && npm run dev
 ```
