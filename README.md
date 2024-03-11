@@ -12,6 +12,16 @@ Built using P2P building blocks by [Holepunch](https://docs.pears.com/) - Develo
   <img src="./src/demo/pw.png" alt="Generate pw" width="30%" />
 </p>
 
+## Features
+
+- Create/Restore/Login users
+- CRUD operations for Passwords
+- Quick actions to use passwords
+- Easy data backup and restore
+- In-app voting for features and feedback
+- **_WIP_:** CRUD operations for Secure Notes
+- **_WIP_:** Share info P2P
+
 ## Development
 
 If you do not have pears installed, [get started here.](https://docs.pears.com/guides/getting-started)
