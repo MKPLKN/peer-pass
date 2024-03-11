@@ -1,6 +1,6 @@
 # PeerPass
 
-PeerPass – your digital life manager. Pure P2P, everything is encrypted by default. Full control in your hands, no more data breaches.
+PeerPass – your digital life manager. Pure P2P, everything is encrypted by default. Full control in your hands, no more data breaches. The goal is to be an alternative to well-known password managers like [LastPass](https://www.cybersecuritydive.com/news/lastpass-cyberattack-timeline/643958/) and [1Password](https://www.cybersecuritydive.com/news/1password-okta-breach/697636/) (**both have breached**). The main difference is that this is FOSS (Free and Open Source Software) and peer-to-peer, meaning **you** own your data. No compromises, no middlemen, no servers—just you and your key pair.
 
 Built using P2P building blocks by [Holepunch](https://docs.pears.com/) - Developed and deployed on [Pear runtime](https://docs.pears.com/)
 
