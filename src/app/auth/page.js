@@ -12,6 +12,7 @@ function RestoreUser () {
     seed: ''
   })
   const [errorMsg, setErrorMsg] = useState('')
+  const [inProgress, setInProgress] = useState(false)
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -21,16 +22,28 @@ function RestoreUser () {
   const handleSubmit = async (e) => {
     e.preventDefault()
 
-    restore(restoreUser).then(async () => {
-      const { username, password } = restoreUser
-      login({ username, password }).then(async () => {
-        await getUser()
-      }).catch(() => {
-        setErrorMsg('Restore succeed, but login failed. Please, try again.')
+    setInProgress(true)
+    await new Promise((resolve) => setTimeout(() => resolve(), 150))
+
+    restore(restoreUser)
+      .then(async () => {
+        const { username, password } = restoreUser
+        login({ username, password })
+          .then(async () => {
+            await getUser()
+            setInProgress(false)
+          })
+          .catch(() => {
+            setErrorMsg(
+              'Restore succeed, but login failed. Please, try again.'
+            )
+            setInProgress(false)
+          })
       })
-    }).catch((e) => {
-      setErrorMsg('An error occurred during user restoration.')
-    })
+      .catch((e) => {
+        setErrorMsg('An error occurred during user restoration.')
+        setInProgress(false)
+      })
   }
 
   return (
@@ -122,7 +135,25 @@ function RestoreUser () {
               type='submit'
               class='flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'
             >
-              Restore User
+              {inProgress && (
+                <svg
+                  xmlns='http://www.w3.org/2000/svg'
+                  fill='none'
+                  viewBox='0 0 24 24'
+                  stroke-width='1.5'
+                  stroke='currentColor'
+                  class='animate-spin w-6 h-6 mr-2'
+                >
+                  <path
+                    stroke-linecap='round'
+                    stroke-linejoin='round'
+                    d='M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99'
+                  />
+                </svg>
+              )}
+
+              {inProgress && 'Restoring...'}
+              {!inProgress && 'Restore User'}
             </button>
           </div>
         </form>
@@ -153,7 +184,7 @@ function CreateUserTab () {
 
     setInProgress(true)
 
-    await new Promise(resolve => setTimeout(() => resolve(), 0))
+    await new Promise((resolve) => setTimeout(() => resolve(), 150))
     const response = await userFacade.create(createUser)
 
     if (!response.success) {
@@ -161,10 +192,15 @@ function CreateUserTab () {
       return setInvalid(response.error.message)
     }
 
-    const loginRes = await login({ username: createUser.username, password: createUser.password })
+    const loginRes = await login({
+      username: createUser.username,
+      password: createUser.password
+    })
     if (!loginRes.success) {
       setInProgress(false)
-      return setInvalid('User creation succeed, but login failed. Please, try login again.')
+      return setInvalid(
+        'User creation succeed, but login failed. Please, try login again.'
+      )
     }
     setInProgress(false)
     setSeed(response.seed)
@@ -321,6 +357,7 @@ function LoginTab () {
   })
 
   const [invalidLogin, setInvalidLogin] = useState(false)
+  const [inProgress, setInProgress] = useState(false)
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -330,9 +367,16 @@ function LoginTab () {
   const handleLogin = async (e) => {
     e.preventDefault()
 
+    setInProgress(true)
+    await new Promise((resolve) => setTimeout(() => resolve(), 150))
+
     const res = await login(loginData)
-    if (!res.success) return setInvalidLogin(true)
+    if (!res.success) {
+      setInProgress(false)
+      return setInvalidLogin(true)
+    }
     await getUser()
+    setInProgress(false)
   }
 
   return (
@@ -392,7 +436,25 @@ function LoginTab () {
               type='submit'
               class='flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'
             >
-              Login
+              {inProgress && (
+                <svg
+                  xmlns='http://www.w3.org/2000/svg'
+                  fill='none'
+                  viewBox='0 0 24 24'
+                  stroke-width='1.5'
+                  stroke='currentColor'
+                  class='animate-spin w-6 h-6 mr-2'
+                >
+                  <path
+                    stroke-linecap='round'
+                    stroke-linejoin='round'
+                    d='M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99'
+                  />
+                </svg>
+              )}
+
+              {inProgress && 'Authenticating...'}
+              {!inProgress && 'Login'}
             </button>
           </div>
         </form>
@@ -416,6 +478,8 @@ function AuthPage () {
 
   return (
     <div className='mx-auto max-w-md'>
+      <FyiBanner />
+
       <div>
         <div className='block'>
           <nav
@@ -458,3 +522,54 @@ function AuthPage () {
 }
 
 export default AuthPage
+
+function FyiBanner () {
+  return (
+    <div class='rounded-md bg-blue-50 p-4 mb-8 mt-5 shadow-md border'>
+      <div class='flex'>
+        <div class='flex-shrink-0'>
+          <svg
+            xmlns='http://www.w3.org/2000/svg'
+            viewBox='0 0 20 20'
+            fill='currentColor'
+            aria-hidden='true'
+            data-slot='icon'
+            class='h-5 w-5 text-blue-400'
+          >
+            <path
+              fill-rule='evenodd'
+              d='M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Zm-7-4a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM9 9a.75.75 0 0 0 0 1.5h.253a.25.25 0 0 1 .244.304l-.459 2.066A1.75 1.75 0 0 0 10.747 15H11a.75.75 0 0 0 0-1.5h-.253a.25.25 0 0 1-.244-.304l.459-2.066A1.75 1.75 0 0 0 9.253 9H9Z'
+              clip-rule='evenodd'
+            />
+          </svg>
+        </div>
+        <div class='ml-3 flex-1 md:flex md:justify-between'>
+          <p class='text-sm text-blue-700'>
+            {' '}
+            FYI the app uses{' '}
+            <a
+              href='https://libsodium.gitbook.io/doc/password_hashing/default_phf'
+              target='_blank'
+              class='font-semibold underline hover:opacity-75'
+              rel='noreferrer'
+            >
+              {' '}
+              libsodium's pwhash
+            </a>{' '}
+            method for each auth operation. The slowness provides protection
+            against{' '}
+            <a
+              href='https://en.wikipedia.org/wiki/Brute-force_attack'
+              target='_blank'
+              class='font-semibold underline hover:opacity-75'
+              rel='noreferrer'
+            >
+              {' '}
+              brute force attacks.
+            </a>{' '}
+          </p>
+        </div>
+      </div>
+    </div>
+  )
+}
