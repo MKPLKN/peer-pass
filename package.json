@@ -1,0 +1,65 @@
+{
+  "name": "pear-pass",
+  "main": "index.html",
+  "pear": {
+    "PEERTOPEERHUB_COM": "750a7c8fbc6dcddfd667812b12652acc9f7adc9bb8e1d3b92578b5e2c530cb9a",
+    "autoCreate": false,
+    "autoLogin": false,
+    "fakePws": false,
+    "testUser": "TestUser",
+    "testPw": "password",
+    "name": "pear-pass",
+    "type": "desktop",
+    "gui": {
+      "title": "asd",
+      "backgroundColor": "#ffffff",
+      "height": 820,
+      "width": 1080
+    },
+    "stage": {
+      "ignore": [
+        ".DS_Store",
+        ".vscode",
+        "test",
+        "node_modules/.package-lock.json",
+        "logs",
+        "plan.md",
+        "test.js",
+        ".babelrc",
+        ".gitignore"
+      ]
+    }
+  },
+  "standard": {
+    "globals": [
+      "Pear"
+    ]
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@babel/cli": "^7.23.9",
+    "@babel/core": "^7.23.9",
+    "@babel/plugin-transform-react-jsx": "^7.23.4",
+    "brittle": "^3.0.0",
+    "standard": "^17.1.0",
+    "tailwindcss": "^3.4.1"
+  },
+  "scripts": {
+    "build": "babel src --out-dir dist --watch",
+    "dev": "pear dev",
+    "test": "brittle test/*.test.js"
+  },
+  "dependencies": {
+    "@headlessui/react": "^2.0.0-alpha.4",
+    "@heroicons/react": "^2.1.1",
+    "@tailwindcss/forms": "^0.5.7",
+    "clsx": "^2.1.0",
+    "hypercore": "^10.33.0",
+    "keypear": "^1.2.1",
+    "pear": "^1.0.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router": "^6.22.1",
+    "react-router-dom": "^6.22.1"
+  }
+}
