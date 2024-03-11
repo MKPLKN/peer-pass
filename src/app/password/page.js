@@ -189,12 +189,14 @@ export default function Passwords () {
                               )}
 
                               {/* Copy Username */}
-                              <button
-                                onClick={copyIdentifier(pw)}
-                                class='mr-2 p-1 rounded-full hover:text-indigo-700 hover:bg-indigo-100'
-                              >
-                                <UserIcon class='h-5 w-5' />
-                              </button>
+                              {pw.identifier && (
+                                <button
+                                  onClick={copyIdentifier(pw)}
+                                  class='mr-2 p-1 rounded-full hover:text-indigo-700 hover:bg-indigo-100'
+                                >
+                                  <UserIcon class='h-5 w-5' />
+                                </button>
+                              )}
 
                               {/* Copy Password */}
                               {pw.password && (
