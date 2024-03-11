@@ -46,6 +46,7 @@
   },
   "scripts": {
     "build": "babel src --out-dir dist --watch",
+    "css": "npx tailwindcss -i ./src/input.css -o ./dist/output.css --watch",
     "dev": "pear dev",
     "test": "brittle test/*.test.js"
   },
