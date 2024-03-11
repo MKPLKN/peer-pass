@@ -35,6 +35,7 @@
       "Pear"
     ]
   },
+  "homepage": "https://github.com/MKPLKN/peer-pass#readme",
   "license": "Apache-2.0",
   "devDependencies": {
     "@babel/cli": "^7.23.9",
